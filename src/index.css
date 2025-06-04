@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-slate-50 text-slate-900 font-sans;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-white text-primary-700 border border-primary-200 hover:bg-primary-50 focus:ring-primary-500;
+  }
+  
+  .installment-card {
+    @apply bg-white rounded-xl p-4 shadow-card transition-all duration-300 border border-slate-200;
+  }
+  
+  .installment-card-active {
+    @apply cursor-pointer hover:shadow-card-hover hover:scale-[1.02] border-primary-500;
+  }
+  
+  .installment-card-inactive {
+    @apply opacity-75 grayscale cursor-not-allowed;
+  }
+  
+  .installment-card-paid {
+    @apply border-success-500 bg-success-50;
+  }
+}
