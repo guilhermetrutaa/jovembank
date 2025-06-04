@@ -12,9 +12,9 @@ interface PaymentDetailsProps {
 }
 
 const WHATSAPP_NUMBERS = {
-  'Santuário': '5561999999999',
-  'Lourdes': '5561888888888',
-  'São Vicente': '5561777777777'
+  'Santuário': '558386273348',
+  'Lourdes': '558388046410',
+  'São Vicente': '558387862744'
 };
 
 const PaymentDetails: React.FC<PaymentDetailsProps> = ({ installment }) => {
