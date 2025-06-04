@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Copy, Check, ArrowRight } from 'lucide-react';
+import { Copy, Check, ArrowRight, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency, formatMonthYear } from '../utils/formatters';
 import { useInstallments } from '../context/InstallmentContext';
+import { useUser } from '../context/UserContext';
 import { Installment } from '../types';
 import { getPixKey } from '../utils/pixUtils';
 
@@ -10,10 +11,18 @@ interface PaymentDetailsProps {
   installment: Installment;
 }
 
+const WHATSAPP_NUMBERS = {
+  'Santuário': '5561999999999',
+  'Lourdes': '5561888888888',
+  'São Vicente': '5561777777777'
+};
+
 const PaymentDetails: React.FC<PaymentDetailsProps> = ({ installment }) => {
   const [copied, setCopied] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
-  const { markAsPaid } = useInstallments();
+  const [paidAll, setPaidAll] = useState(false);
+  const { markAsPaid, markAllAsPaid, unpaidAmount } = useInstallments();
+  const { userData } = useUser();
   
   const pixKey = getPixKey();
   
@@ -26,12 +35,30 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({ installment }) => {
     }, 2000);
   };
   
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = (payAll: boolean = false) => {
+    setPaidAll(payAll);
     setShowPaymentSuccess(true);
     setTimeout(() => {
-      markAsPaid(installment.id);
+      if (payAll) {
+        markAllAsPaid();
+      } else {
+        markAsPaid(installment.id);
+      }
       setShowPaymentSuccess(false);
-    }, 2000);
+    }, 10000);
+  };
+
+  const handleWhatsAppRedirect = () => {
+    if (!userData?.community) return;
+    
+    const phoneNumber = WHATSAPP_NUMBERS[userData.community];
+    const message = encodeURIComponent(
+      paidAll 
+        ? `Meu nome é *${userData.name}* sou da comunidade *${userData.community}* e paguei *todas as parcelas* do Crisma`
+        : `Meu nome é *${userData.name}* sou da comunidade *${userData.community}* e paguei a parcela *${installment.id}*`
+    );
+    
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
   };
   
   return (
@@ -48,9 +75,16 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({ installment }) => {
             <Check className="h-8 w-8 text-success-600" />
           </div>
           <h3 className="text-xl font-semibold text-success-800 mb-2">Pagamento Confirmado!</h3>
-          <p className="text-success-700 max-w-xs">
+          <p className="text-success-700 max-w-xs mb-6">
             Obrigado por sua contribuição. Sua parcela foi marcada como paga.
           </p>
+          <button
+            onClick={handleWhatsAppRedirect}
+            className="btn-primary flex items-center justify-center gap-2"
+          >
+            Enviar Comprovante
+            <MessageCircle className="h-4 w-4" />
+          </button>
         </motion.div>
       ) : (
         <motion.div
@@ -78,6 +112,22 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({ installment }) => {
               </div>
             </div>
           </div>
+
+          <div className="mb-6 p-4 bg-primary-50 rounded-lg border border-primary-200">
+            <h4 className="text-primary-800 font-medium mb-2">Pagar todas as parcelas</h4>
+            <p className="text-sm text-primary-600 mb-3">
+              Você pode pagar todas as parcelas restantes de uma vez:
+            </p>
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-primary-800">{formatCurrency(unpaidAmount)}</span>
+              <button
+                onClick={() => handleConfirmPayment(true)}
+                className="btn-primary text-sm"
+              >
+                Pagar Tudo
+              </button>
+            </div>
+          </div>
           
           <div className="mb-6 flex flex-col items-center">
             <p className="text-sm text-slate-600 mb-4 text-center">
@@ -85,7 +135,7 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({ installment }) => {
             </p>
             <div className="bg-white p-4 rounded-lg border border-slate-200 mb-4">
               <img 
-                src="https://api.qrserver.com/v1/create-qr-code/?data=00020126580014BR.GOV.BCB.PIX0136jovembackpscj01@gmail.com5204000053039865802BR5913CRISMA%20JOVEM6008BRASILIA62070503***6304E2CA&size=180x180&bgcolor=FFFFFF&color=1E40AF" 
+                src="https://media.discordapp.net/attachments/1230318254271234051/1379870559239798874/qrcode.png?ex=6841d01a&is=68407e9a&hm=ac20ba925590a687a60616eb988b855d3500eb2250d95ff54847e8a78acd3e3c&=&format=webp&quality=lossless&width=741&height=740" 
                 alt="QR Code Pix"
                 className="w-[180px] h-[180px]"
               />
@@ -117,7 +167,7 @@ const PaymentDetails: React.FC<PaymentDetailsProps> = ({ installment }) => {
               Após realizar o pagamento:
             </p>
             <button
-              onClick={handleConfirmPayment}
+              onClick={() => handleConfirmPayment(false)}
               className="btn-primary flex items-center justify-center gap-2"
             >
               Confirmar Pagamento

@@ -9,6 +9,9 @@ interface InstallmentContextType {
   isAvailable: (installment: Installment) => boolean;
   isPaid: (installment: Installment) => boolean;
   markAsPaid: (installmentId: number) => void;
+  markAllAsPaid: () => void;
+  totalAmount: number;
+  unpaidAmount: number;
 }
 
 const InstallmentContext = createContext<InstallmentContextType | undefined>(undefined);
@@ -88,6 +91,31 @@ export const InstallmentProvider: React.FC<InstallmentProviderProps> = ({ childr
     }
   };
 
+  // Mark all installments as paid
+  const markAllAsPaid = () => {
+    const updatedInstallments = installments.map(installment => ({
+      ...installment,
+      paid: true
+    }));
+    
+    setInstallments(updatedInstallments);
+    
+    // Save paid status to localStorage
+    const paidIds = updatedInstallments.map(installment => installment.id);
+    localStorage.setItem('paidInstallments', JSON.stringify(paidIds));
+    
+    // Deselect any selected installment
+    setSelectedInstallment(null);
+  };
+
+  // Calculate total amount
+  const totalAmount = installments.reduce((sum, installment) => sum + installment.amount, 0);
+
+  // Calculate unpaid amount
+  const unpaidAmount = installments
+    .filter(installment => !installment.paid)
+    .reduce((sum, installment) => sum + installment.amount, 0);
+
   return (
     <InstallmentContext.Provider
       value={{
@@ -96,7 +124,10 @@ export const InstallmentProvider: React.FC<InstallmentProviderProps> = ({ childr
         setSelectedInstallment,
         isAvailable,
         isPaid,
-        markAsPaid
+        markAsPaid,
+        markAllAsPaid,
+        totalAmount,
+        unpaidAmount
       }}
     >
       {children}
