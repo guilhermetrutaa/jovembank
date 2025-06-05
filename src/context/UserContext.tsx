@@ -1,14 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-interface UserData {
+interface User {
+  id: number;
   name: string;
-  community: 'Santuário' | 'Lourdes' | 'São Vicente' | null;
+  community: string;
 }
 
 interface UserContextType {
-  userData: UserData | null;
-  setUserData: (data: UserData) => void;
   isRegistered: boolean;
+  userData: User | null;
+  register: (name: string, community: string) => Promise<void>;
+  loadUser: (name: string, community: string) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -26,26 +28,66 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [userData, setUserDataState] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
 
   useEffect(() => {
-    const savedUserData = localStorage.getItem('userData');
-    if (savedUserData) {
-      setUserDataState(JSON.parse(savedUserData));
+    const savedUser = localStorage.getItem('userData');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      setUserData(user);
     }
   }, []);
 
-  const setUserData = (data: UserData) => {
-    setUserDataState(data);
-    localStorage.setItem('userData', JSON.stringify(data));
+  const register = async (name: string, community: string) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, community }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao registrar usuário');
+      }
+
+      const user = await response.json();
+      setUserData(user);
+      localStorage.setItem('userData', JSON.stringify(user));
+    } catch (error) {
+      console.error('Erro ao registrar:', error);
+      throw error;
+    }
+  };
+
+  const loadUser = async (name: string, community: string) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/${encodeURIComponent(name)}/${encodeURIComponent(community)}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          return;
+        }
+        throw new Error('Erro ao carregar usuário');
+      }
+
+      const data = await response.json();
+      setUserData(data.user);
+      localStorage.setItem('userData', JSON.stringify(data.user));
+    } catch (error) {
+      console.error('Erro ao carregar usuário:', error);
+      throw error;
+    }
   };
 
   return (
     <UserContext.Provider
       value={{
+        isRegistered: !!userData,
         userData,
-        setUserData,
-        isRegistered: !!userData
+        register,
+        loadUser,
       }}
     >
       {children}

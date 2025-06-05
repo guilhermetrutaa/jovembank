@@ -11,7 +11,7 @@ interface PaymentDetailsProps {
   installment: Installment;
 }
 
-const WHATSAPP_NUMBERS = {
+const WHATSAPP_NUMBERS: Record<string, string> = {
   'Santuário': '558386273348',
   'Lourdes': '558388046410',
   'São Vicente': '558387862744'
