@@ -93,3 +93,48 @@ export async function updatePayments(updatedPayments: any[]) {
     body: JSON.stringify(updatedData),
   });
 }
+
+export async function getAdminCredentials(): Promise<{id: string, password: string}> {
+  const data = await getBinData();
+  return data.admin || { id: 'crismaAdmin123', password: 'pscjcrisma2026' };
+}
+
+export async function verifyAdmin(id: string, password: string): Promise<boolean> {
+  const admin = await getAdminCredentials();
+  return admin.id === id && admin.password === password;
+}
+
+export async function updateAdminCredentials(newId: string, newPassword: string) {
+  const data = await getBinData();
+  const updatedData = { ...data, admin: { id: newId, password: newPassword } };
+  
+  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(updatedData),
+  });
+}
+
+// Função para obter relatório de pagamentos
+export async function getPaymentReport() {
+  const payments = await getPayments();
+  const users = await getUsers();
+  
+  const report = users.map(user => {
+    const userPayments = payments.filter(
+      (p: any) => p.userName === user.name && p.parish === user.parish
+    );
+    
+    return {
+      userName: user.name,
+      parish: user.parish,
+      totalPaid: userPayments.length,
+      totalInstallments: 15, // Total fixo de parcelas
+      lastPayment: userPayments.length > 0 
+        ? new Date(userPayments[userPayments.length - 1].paymentDate).toLocaleDateString() 
+        : 'Nenhum'
+    };
+  });
+  
+  return report;
+}
