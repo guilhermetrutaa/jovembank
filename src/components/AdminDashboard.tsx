@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LogOut, Filter, User, Church, CheckCircle, Trash2 } from 'lucide-react';
-import { getPaymentReport, deleteUser } from '../utils/api';
+import { getPaymentReport, deleteUser } from '../utils/firebase-db';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard: React.FC = () => {

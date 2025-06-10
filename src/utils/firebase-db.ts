@@ -1,37 +1,36 @@
-const BIN_ID = '6845a56b8561e97a5021108c';
-const API_KEY = '$2a$10$gJuGd/Oa9ylOaw82pXR8B.7.feWfKQkAtdtrTG9gmaQIhCbJSQR1C';
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, get, push } from "firebase/database";
 
-const headers = {
-  'Content-Type': 'application/json',
-  'X-Master-Key': API_KEY,
-  'X-Bin-Versioning': 'false'
+// 🔥 Configuração do Firebase (substitua pelos seus dados)
+const firebaseConfig = {
+  apiKey: "AIzaSyCHXXtNL_bpAS9JU5bQfCji3GDqDJkng3s",
+  authDomain: "crismaapp.firebaseapp.com",
+  databaseURL: "https://crismaapp-default-rtdb.firebaseio.com",
+  projectId: "crismaapp",
+  storageBucket: "crismaapp.firebasestorage.app",
+  messagingSenderId: "319556551205",
+  appId: "1:319556551205:web:5bffaf6d6d2fa6f9cfb5cc"
 };
 
-async function getBinData() {
-  try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-      headers,
-    });
+// Inicializa o Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    if (!res.ok) {
-      throw new Error(`Erro na requisição: ${res.status}`);
-    }
-
-    const data = await res.json();
-    return data.record || {};
-  } catch (error) {
-    console.error('Erro ao buscar dados:', error);
-    return {};
-  }
+// Função para pegar todos os dados do banco
+async function getDatabaseData() {
+  const snapshot = await get(ref(db));
+  return snapshot.val() || {};
 }
 
+// 🔄 Funções adaptadas (mesma estrutura, mas usando Firebase)
+
 export async function getUsers(): Promise<any[]> {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   return data.users || [];
 }
 
 export async function addUser(user: { name: string; parish: string }) {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   const users = data.users || [];
 
   const exists = users.find(
@@ -45,15 +44,11 @@ export async function addUser(user: { name: string; parish: string }) {
   const updatedUsers = [...users, user];
   const updatedData = { ...data, users: updatedUsers };
 
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify(updatedData),
-  });
+  await set(ref(db), updatedData); // Substitui o fetch do JSONBin
 }
 
 export async function getPayments(): Promise<any[]> {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   return data.payments || [];
 }
 
@@ -68,31 +63,22 @@ export async function savePayment(payment: {
   paid: boolean;
   paymentDate?: string;
 }) {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   const payments = data.payments || [];
   const updatedPayments = [...payments, payment];
   const updatedData = { ...data, payments: updatedPayments };
 
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify(updatedData),
-  });
+  await set(ref(db), updatedData);
 }
 
 export async function updatePayments(updatedPayments: any[]) {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   const updatedData = { ...data, payments: updatedPayments };
-
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify(updatedData),
-  });
+  await set(ref(db), updatedData);
 }
 
 export async function getAdminCredentials(): Promise<{ id: string, password: string }> {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   return data.admin || { id: 'crismaAdmin123', password: 'pscjcrisma2026' };
 }
 
@@ -102,14 +88,9 @@ export async function verifyAdmin(id: string, password: string): Promise<boolean
 }
 
 export async function updateAdminCredentials(newId: string, newPassword: string) {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   const updatedData = { ...data, admin: { id: newId, password: newPassword } };
-
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify(updatedData),
-  });
+  await set(ref(db), updatedData);
 }
 
 export async function getPaymentReport() {
@@ -135,9 +116,8 @@ export async function getPaymentReport() {
   return report;
 }
 
-// 🔥 NOVA FUNÇÃO: deletar usuário e pagamentos relacionados
 export async function deleteUser(userName: string, parish: string) {
-  const data = await getBinData();
+  const data = await getDatabaseData();
   const users = data.users || [];
   const payments = data.payments || [];
 
@@ -150,10 +130,5 @@ export async function deleteUser(userName: string, parish: string) {
   );
 
   const updatedData = { ...data, users: updatedUsers, payments: updatedPayments };
-
-  await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify(updatedData),
-  });
+  await set(ref(db), updatedData);
 }

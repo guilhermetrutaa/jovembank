@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, User } from 'lucide-react';
-import { verifyAdmin } from '../utils/api';
+import { verifyAdmin } from '../utils/firebase-db';
 import { useNavigate } from 'react-router-dom';
 
 const AdminLogin: React.FC = () => {

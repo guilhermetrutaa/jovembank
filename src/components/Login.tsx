@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LogIn, MapPin, User as UserIcon } from 'lucide-react';
 import CrismaImg from './Crisma.png';
-import { addUser } from '../utils/api'; // 👈 Importa a função da API
+import { addUser } from '../utils/firebase-db'; // 👈 Importa a função da API
 
 interface LoginProps {
   onLogin: (user: { name: string; parish: 'Sagrado' | 'Lourdes' | 'São Vicente' }) => void;

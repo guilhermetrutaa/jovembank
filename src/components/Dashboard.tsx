@@ -5,7 +5,7 @@ import { generateInstallments, formatCurrency } from '../utils/installments';
 import PaymentModal from './PaymentModal';
 import BulkPaymentModal from './BulkPaymentModal';
 import CrismaImg from './Crisma.png';
-import { getPayments, savePayment, updatePayments } from '../utils/api';
+import { getPayments, savePayment, updatePayments } from '../utils/firebase-db';
 
 interface DashboardProps {
   user: { name: string; parish: string };
