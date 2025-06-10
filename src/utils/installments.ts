@@ -5,26 +5,25 @@ export const generateInstallments = (): Installment[] => {
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
   ];
-  
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-  
+
+  const startMonth = 3; // Abril (0-indexed)
+  const startYear = 2025;
+
   const installments: Installment[] = [];
-  
+
   for (let i = 0; i < 15; i++) {
-    const monthIndex = (currentMonth + i) % 12;
-    const year = currentYear + Math.floor((currentMonth + i) / 12);
-    
+    const monthIndex = (startMonth + i) % 12;
+    const year = startYear + Math.floor((startMonth + i) / 12);
+
     installments.push({
       id: i + 1,
       month: months[monthIndex],
       year,
-      amount: 15,
+      amount: i === 14 ? 30 : 15, // Última parcela é R$ 30
       paid: false
     });
   }
-  
+
   return installments;
 };
 

@@ -208,7 +208,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           <div className="bg-white rounded-xl p-6 shadow-sm border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Paróquia</p>
+                <p className="text-sm font-medium text-gray-600">Comunidade</p>
                 <p className="text-xl font-bold text-gray-800">{user.parish}</p>
               </div>
               <Church className="w-8 h-8 text-gray-600" />
