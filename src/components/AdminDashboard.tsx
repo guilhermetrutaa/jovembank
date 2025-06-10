@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut, Filter, User, Church, CheckCircle } from 'lucide-react';
-import { getPaymentReport } from '../utils/api';
+import { LogOut, Filter, User, Church, CheckCircle, Trash2 } from 'lucide-react';
+import { getPaymentReport, deleteUser } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard: React.FC = () => {
@@ -40,6 +40,26 @@ const AdminDashboard: React.FC = () => {
     navigate('/admin');
   };
 
+  const handleDelete = async (userName: string, parish: string) => {
+    const ok = window.confirm(
+      `Tem certeza que deseja excluir ${userName} da comunidade ${parish}? Essa ação é permanente.`
+    );
+    if (!ok) return;
+
+    try {
+      setIsLoading(true);
+      await deleteUser(userName, parish);
+      const refreshed = await getPaymentReport();
+      setReport(refreshed);
+      setSelectedParish('Todas');
+    } catch (err) {
+      console.error('Erro ao excluir usuário:', err);
+      alert('Erro ao excluir. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const parishes = ['Todas', 'Sagrado', 'Lourdes', 'São Vicente'];
 
   if (isLoading) {
@@ -52,7 +72,6 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-4">
@@ -71,9 +90,7 @@ const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
         <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border mb-8">
           <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Filtros</h2>
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
@@ -92,26 +109,28 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Report Table */}
         <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     <User className="w-4 h-4 inline mr-2" />
                     Nome
                   </th>
-                  <th scope="col" className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     <Church className="w-4 h-4 inline mr-2" />
                     Comunidade
                   </th>
-                  <th scope="col" className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     <CheckCircle className="w-4 h-4 inline mr-2" />
                     Parcelas Pagas
                   </th>
-                  <th scope="col" className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     Último Pagamento
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    Ações
                   </th>
                 </tr>
               </thead>
@@ -137,6 +156,15 @@ const AdminDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-gray-500">
                       {item.lastPayment}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <button
+                        title="Excluir usuário"
+                        onClick={() => handleDelete(item.userName, item.parish)}
+                        className="text-red-600 hover:text-red-800 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
