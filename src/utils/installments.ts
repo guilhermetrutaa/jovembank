@@ -9,9 +9,10 @@ export const generateInstallments = (): Installment[] => {
   const startMonth = 3; // Abril (0-indexed)
   const startYear = 2025;
 
+  const totalInstallments = 14;
   const installments: Installment[] = [];
 
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < totalInstallments; i++) {
     const monthIndex = (startMonth + i) % 12;
     const year = startYear + Math.floor((startMonth + i) / 12);
 
@@ -19,7 +20,7 @@ export const generateInstallments = (): Installment[] => {
       id: i + 1,
       month: months[monthIndex],
       year,
-      amount: i === 14 ? 30 : 15, // Última parcela é R$ 30
+      amount: i === totalInstallments - 1 ? 30 : 15, // Última parcela é R$ 30
       paid: false
     });
   }

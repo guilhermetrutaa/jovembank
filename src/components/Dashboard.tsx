@@ -179,7 +179,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Parcelas Pagas</p>
-                <p className="text-3xl font-bold text-green-600">{paidCount}/15</p>
+                <p className="text-3xl font-bold text-green-600">{paidCount}/14</p>
               </div>
               <Calendar className="w-8 h-8 text-green-600" />
             </div>

@@ -60,7 +60,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <div>
               <label htmlFor="parish" className="block text-sm font-medium text-gray-700 mb-2">
                 <MapPin className="w-4 h-4 inline mr-2" />
-                Paróquia
+                Comunidade
               </label>
               <select
                 id="parish"

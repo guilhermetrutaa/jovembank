@@ -3,7 +3,7 @@ import { ParishContact } from '../types';
 export const getParishContact = (parish: string): ParishContact => {
   const contacts: Record<string, ParishContact> = {
     'Sagrado': {
-      whatsappNumber: '558386273348',
+      whatsappNumber: '558396295901',
       communityName: 'Sagrado Coração'
     },
     'Lourdes': {
