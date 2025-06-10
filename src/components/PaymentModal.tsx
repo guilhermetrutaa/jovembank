@@ -21,7 +21,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [showConfirmation, setShowConfirmation] = useState(false);
   
   const pixKey = "jovembank@paroquia.com.br";
-  const qrCodeUrl = "https://media.discordapp.net/attachments/1230318254271234051/1379870559239798874/qrcode.png?ex=68466d5a&is=68451bda&hm=1bcd2d476e67d2aff7e82af3c66bc84770d23c927f137b912583d036ed6e026e&=&format=webp&quality=lossless&width=741&height=740";
+  const qrCodeUrl = "https://media.discordapp.net/attachments/1230318254271234051/1379870559239798874/qrcode.png?ex=6848679a&is=6847161a&hm=b80b7e6cce9fe9298a997ea1ba37df1d659122a0cfba44c8431d1df351aa8681&=&format=webp&quality=lossless&width=741&height=740";
 
   const handleCopyPixKey = async () => {
     try {
