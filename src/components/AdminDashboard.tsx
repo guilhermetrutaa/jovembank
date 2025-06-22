@@ -151,7 +151,7 @@ const AdminDashboard: React.FC = () => {
                             ? 'bg-blue-100 text-blue-800' 
                             : 'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {item.totalPaid}/15
+                        {item.totalPaid}/14
                       </span>
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-gray-500">
