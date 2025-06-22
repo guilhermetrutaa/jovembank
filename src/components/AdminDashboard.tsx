@@ -145,7 +145,7 @@ const AdminDashboard: React.FC = () => {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-gray-500">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        item.totalPaid === 15 
+                        item.totalPaid === 14 
                           ? 'bg-green-100 text-green-800' 
                           : item.totalPaid > 10 
                             ? 'bg-blue-100 text-blue-800' 
